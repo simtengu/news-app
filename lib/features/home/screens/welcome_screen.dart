@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:news_app/core/constants.dart';
-import 'package:news_app/features/home/screens/home.dart';
 import 'package:news_app/features/home/screens/home_tabs.dart';
 
 class WelcomeScreen extends StatelessWidget {

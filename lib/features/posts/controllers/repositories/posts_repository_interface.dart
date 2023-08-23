@@ -1,6 +1,6 @@
-import '../../../../core/common/network_info.dart';
-
 abstract class PostsRepoInterface {
-  Future fetchAllPosts();
-//  Future<DataState> fetchRecommendedPosts();
+  Future fetchAllPosts(Map<String,String> parameters);
+ Future fetchRecommendedPosts(Map<String,String> options);
+ Future fetchFilteredPosts(Map<String,String> options);
+ Future searchPosts(Map<String,String> options);
 }

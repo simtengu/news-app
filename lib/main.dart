@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:news_app/features/home/screens/welcome_screen.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:news_app/features/posts/models/article.dart';
 // import 'package:news_app/features/home/screens/home.dart';
 
-void main() {
+void main() async {
+  await Hive.initFlutter();
+  Hive.registerAdapter(ArticleAdapter());
+  await Hive.openBox<Article>('Articles');
+  await Hive.openBox<String>('FavCategories');
   runApp(const MyApp());
 }
 

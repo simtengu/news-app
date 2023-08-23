@@ -5,17 +5,49 @@ import 'package:news_app/core/constants.dart';
 import '../bloc/posts_bloc.dart';
 import '../models/post_model.dart';
 
-class PostDetailsScreen extends StatelessWidget {
+class PostDetailsScreen extends StatefulWidget {
   //final Map<String,dynamic> article;
   const PostDetailsScreen({super.key, required this.post});
   final Post post;
+
+  @override
+  State<PostDetailsScreen> createState() => _PostDetailsScreenState();
+}
+
+class _PostDetailsScreenState extends State<PostDetailsScreen> {
+  bool isSaved = false;
+
+  @override
+  void initState() {
+    super.initState();
+    BlocProvider.of<PostsBloc>(context)
+        .add(IsPostSavedCheckEvent(postTitle: widget.post.title));
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => PostsBloc(),
       child: BlocConsumer<PostsBloc, PostsState>(
-        listener: (context, state) {},
+        listener: (context, state) {
+          if (state is PostSaveToggleState) {
+            isSaved = state.isSaved;
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.isSaved
+                    ? "The post has been saved successfully"
+                    : "The post has been removed successfully"),
+                duration: const Duration(
+                    seconds:
+                        3), // Optional: Set how long the Snackbar should be displayed.
+              ),
+            );
+          }
+
+          if (state is IsPostSavedCheckState) {
+            isSaved = state.isPostSaved;
+          }
+        },
         builder: (context, state) {
           return Scaffold(
             appBar: AppBar(
@@ -68,8 +100,13 @@ class PostDetailsScreen extends StatelessWidget {
                           shape: BoxShape.circle,
                         ),
                         child: IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.bookmark_border),
+                          onPressed: () {
+                            BlocProvider.of<PostsBloc>(context).add(
+                                PostSaveToggleEvent(
+                                    isSaved: isSaved, post: widget.post));
+                          },
+                          icon: Icon(
+                              isSaved ? Icons.bookmark : Icons.bookmark_border),
                         ),
                       ),
                     ],
@@ -96,7 +133,7 @@ class PostDetailsScreen extends StatelessWidget {
                             width: 6,
                           ),
                           Text(
-                            "${post.source}, ",
+                            "${widget.post.source}, ",
                             style: const TextStyle(
                                 color: Colors.grey,
                                 fontSize: AppConstants.caption1),
@@ -113,7 +150,7 @@ class PostDetailsScreen extends StatelessWidget {
                         height: 7,
                       ),
                       Text(
-                        post.title,
+                        widget.post.title,
                         style: const TextStyle(
                             fontSize: AppConstants.title1,
                             fontWeight: FontWeight.w700,
@@ -126,27 +163,18 @@ class PostDetailsScreen extends StatelessWidget {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(15),
                         child: Image.network(
-                          post.imageUrl,
-                          width: MediaQuery.of(context).size.width - 30,
+                          widget.post.imageUrl,
+                          width: MediaQuery.of(context).size.width - 10,
+                          fit: BoxFit.cover,
                         ),
                       ),
                       const SizedBox(
                         height: 15,
                       ),
                       Text(
-                        post.description,
+                        widget.post.description,
                         textAlign: TextAlign.left,
-                        style: const TextStyle(
-                            fontSize: AppConstants.body1,
-                            color: Colors.black54),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-
-                      Text(
-                        post.description,
-                        textAlign: TextAlign.left,
+                        // maxLines: 20,
                         style: const TextStyle(
                             fontSize: AppConstants.body1,
                             color: Colors.black54),

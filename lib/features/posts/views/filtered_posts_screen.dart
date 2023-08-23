@@ -1,14 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:news_app/core/common/error_screen.dart';
 import 'package:news_app/core/constants.dart';
+import 'package:news_app/features/posts/bloc/posts_bloc.dart';
 import 'package:news_app/features/posts/models/post_model.dart';
 import 'package:news_app/features/posts/widgets/post_card.dart';
 import 'package:news_app/features/posts/widgets/posts_filter_item.dart';
 
+import '../../home/bloc/bloc/home_bloc.dart';
+import '../models/country_model.dart';
+import '../widgets/posts_filter_loading_screen.dart';
 
-class FilteredPostsScreen extends StatelessWidget {
+class FilteredPostsScreen extends StatefulWidget {
   const FilteredPostsScreen({super.key});
 
+  @override
+  State<FilteredPostsScreen> createState() => _FilteredPostsScreenState();
+}
+
+class _FilteredPostsScreenState extends State<FilteredPostsScreen> {
+  String _filterCountry = 'worldwide';
+  String _searchCategory = 'all';
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -27,82 +40,161 @@ class FilteredPostsScreen extends StatelessWidget {
                 width: 10,
               ),
               Container(
-                alignment: Alignment.center,
-                margin: const EdgeInsets.only(right: 4),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 17, vertical: 6),
+                padding: const EdgeInsets.all(2).copyWith(left: 10),
+                margin: const EdgeInsets.only(right: 3),
                 decoration: BoxDecoration(
-                    color: AppConstants.bgPrimary,
-                    borderRadius: BorderRadius.circular(30)),
-                child: Text(
-                  'All',
-                  style: GoogleFonts.cabin(color: Colors.white),
+                  color: AppConstants.bgSecondaryLight,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton(
+                      value: _filterCountry,
+                      items: Country.sortedCountries().map((country) {
+                        return DropdownMenuItem(
+                          value: country.code,
+                          child: Row(
+                            children: [
+                              Image.asset(
+                                country.flag,
+                                width: 20,
+                                height: 18,
+                                fit: BoxFit.cover,
+                              ),
+                              const SizedBox(
+                                width: 3,
+                              ),
+                              Text(country.name),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        if (value != null && value.isNotEmpty) {
+                          BlocProvider.of<HomeBloc>(context)
+                              .add(NavigateTabEvent(pageIndex: 1, filterInfo: {
+                            "searchCategory": _searchCategory,
+                            "filterCountry": value,
+                          }));
+                        }
+                      }),
                 ),
               ),
-              const PostsFilterItem(
-                category: 'sports',
+              GestureDetector(
+                onTap: () => BlocProvider.of<HomeBloc>(context)
+                    .add(NavigateTabEvent(pageIndex: 1, filterInfo: {
+                  "searchCategory": 'all',
+                  "filterCountry": _filterCountry,
+                })),
+                child: Container(
+                  alignment: Alignment.center,
+                  margin: const EdgeInsets.only(right: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 17, vertical: 6),
+                  decoration: BoxDecoration(
+                      color: _searchCategory == "all"
+                          ? AppConstants.bgPrimary
+                          : AppConstants.bgSecondaryLight,
+                      borderRadius: BorderRadius.circular(30)),
+                  child: Text(
+                    'All',
+                    style: GoogleFonts.cabin(
+                      color: _searchCategory == "all"
+                          ? Colors.white
+                          : Colors.black,
+                    ),
+                  ),
+                ),
               ),
-              const PostsFilterItem(
-                category: 'education',
-              ),
-              const PostsFilterItem(
-                category: 'politics',
-              ),
-              const PostsFilterItem(
-                category: 'entertainment',
-              ),
-              const PostsFilterItem(
-                category: 'environment',
-              ),
-              const PostsFilterItem(
-                category: 'economics',
-              ),
+              ...Post.categoriesList
+                  .map((category) => PostsFilterItem(
+                        category: category,
+                        filterCountry: _filterCountry,
+                        filterCategory: _searchCategory,
+                      ))
+                  .toList(),
             ],
           ),
         ),
         const SizedBox(
           height: 16,
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 10,
-          ),
-          child: Text(
-            '33 Available Articles',
-            style: GoogleFonts.cabin(
-                fontWeight: FontWeight.bold, fontSize: AppConstants.body1),
-          ),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: 1,
-            itemBuilder: ((context, index) =>
-                // const ListTile(
-                //       title: Text('hello'),
-                //     )),
+        BlocConsumer<PostsBloc, PostsState>(
+          listener: (context, state) {
+            if (state is PostFilterChangedState) {
+              setState(() {
+                _filterCountry = state.country;
+                _searchCategory = state.searchCategory;
+              });
+            }
 
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                  child: PostCard(
-                    post: Post(
-                        author: 'albert oscar',
-                        title: 'here is a dummy post',
-                        description: 'here is a simple desc',
-                        source: 'CNN news',
-                        imageUrl: 'https://media.tenor.com/PrBIxJ_-zswAAAAj/awesome-smiley-guy.gif',
-                        category: 'sports',
-                        country: 'us',
-                        publishedAt: '33 jun'),
-                  ),
-                )),
-          ),
-        )
+            if (state is FilteredPostsLoadedState) {
+              setState(() {
+                _filterCountry = state.country;
+                _searchCategory = state.searchCategory;
+              });
+            }
+          },
+          builder: (context, state) {
+            if (state is PostsLoadingState) {
+              return const PostsFilterLoadingScreen();
+              // return const HomeLoadingScreen();
+            }
+
+            if (state is PostsErrosState) {
+              ErrorScreen(message: state.errorMessage);
+            }
+            if (state is FilteredPostsLoadedState) {
+              return Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                      ),
+                      child: Text(
+                        '${state.posts.length} Available Articles',
+                        style: GoogleFonts.cabin(
+                            fontWeight: FontWeight.bold,
+                            fontSize: AppConstants.body1),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    if (state.posts.isEmpty)
+                      const Center(
+                        child: Text(
+                          'Try other filters....',
+                          style: TextStyle(fontSize: AppConstants.body2),
+                        ),
+                      ),
+                    if (state.posts.isNotEmpty)
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: state.posts.length,
+                          itemBuilder: ((context, index) => Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 6.0),
+                                child: PostCard(
+                                  post: state.posts[index],
+                                ),
+                              )),
+                        ),
+                      )
+                  ],
+                ),
+              );
+            }
+
+            return const ErrorScreen(
+              message: 'something went wrong',
+            );
+          },
+        ),
       ],
     );
   }

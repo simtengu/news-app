@@ -6,7 +6,7 @@ class Post {
   final String title;
   final String description;
   final String source;
-  final String imageUrl;
+  String imageUrl;
   final String category;
   final String country;
   final String publishedAt;
@@ -21,7 +21,7 @@ class Post {
     required this.publishedAt,
   });
 
-    @override
+  @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is Post && runtimeType == other.runtimeType && title == other.title;
@@ -30,13 +30,12 @@ class Post {
   int get hashCode => title.hashCode;
 
   static List<String> categoriesList = [
-    'general',
+    'sports',
     'business',
     'entertainment',
-    'health',
-    'science',
-    'sports',
-    'technology'
+    'technology',
+    'politics',
+    'environment',
   ];
 
   Post copyWith({
@@ -75,17 +74,27 @@ class Post {
   }
 
   factory Post.fromMap(Map<String, dynamic> map) {
+    final authorRs = (map['creator'] ?? []) as List<dynamic>;
+    final categoryRs = (map['category'] ?? []) as List<dynamic>;
+    final countryRs = (map['country'] ?? []) as List<dynamic>;
+    final List<String> categoryFinal =
+        categoryRs.map((e) => e.toString()).toList();
+
+    final List<String> authorFinal = authorRs.map((e) => e.toString()).toList();
+    final List<String> countryFinal =
+        countryRs.map((e) => e.toString()).toList();
+
     return Post(
-      author: (map['author'] ?? "author") as String,
+      author: authorFinal.isNotEmpty ? authorFinal[0] : "albert oscar",
       title: (map['title'] ?? 'title') as String,
-      description: (map['description'] ?? 'desc') as String,
-      source: (map['source'] ?? 'source') as String,
-      imageUrl: (map['image'] ??
+      description: (map['content'] ?? 'desc') as String,
+      source: (map['source_id'] ?? 'CNN News') as String,
+      imageUrl: (map['image_url'] ??
               'https://i0.wp.com/theperfectroundgolf.com/wp-content/uploads/2022/04/placeholder.png?fit=1200%2C800&ssl=1')
           as String,
-      category: (map['category'] ?? 'category') as String,
-      country: (map['country'] ?? 'country') as String,
-      publishedAt: (map['publishedAt'] ?? 'date') as String,
+      category: categoryFinal.isNotEmpty ? categoryFinal[0] : 'sports',
+      country: countryFinal.isNotEmpty ? countryFinal[0] : "United kingdoms",
+      publishedAt: (map['pubDate'] ?? 'Feb 28, 2023') as String,
     );
   }
 

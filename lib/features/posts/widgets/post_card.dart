@@ -12,26 +12,31 @@ class PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => PostsBloc(),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 0.1),
-        child: BlocConsumer<PostsBloc, PostsState>(
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 0.1),
+      child: Builder(builder: (context) {
+        return BlocConsumer<PostsBloc, PostsState>(
           listener: (context, state) {
             if (state is NavigateToPostDetailsState) {
               //navigate to post details screen..........................
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) =>  PostDetailsScreen(post: post,),
+                  builder: (context) => PostDetailsScreen(
+                    post: post,
+                  ),
                 ),
               );
             }
           },
           builder: (context, state) {
             return InkWell(
-              onTap: () => context
-                  .read<PostsBloc>()
-                  .add(NavigateToPostDetailsEvent(post: post)),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => PostDetailsScreen(
+                    post: post,
+                  ),
+                ),
+              ),
               child: Container(
                 padding: const EdgeInsets.all(1),
                 margin: const EdgeInsets.symmetric(vertical: 4),
@@ -110,8 +115,8 @@ class PostCard extends StatelessWidget {
               ),
             );
           },
-        ),
-      ),
+        );
+      }),
     );
   }
 }
