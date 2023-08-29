@@ -34,6 +34,10 @@ class _SavedPostsScreenState extends State<SavedPostsScreen> {
         if (state is PostSaveToggleState) {
           savedPosts = state.posts!;
         }
+
+        if (state is PostDetailsScreenPopedOutState) {
+          BlocProvider.of<PostsBloc>(context).add(LoadSavedPostsEvent());
+        }
       }),
       builder: ((context, state) {
         if (savedPosts.isNotEmpty) {
@@ -48,7 +52,9 @@ class _SavedPostsScreenState extends State<SavedPostsScreen> {
                   horizontal: 10,
                 ),
                 child: Text(
-                  '${savedPosts.length} Saved Articles',
+                  savedPosts.length > 1
+                      ? '${savedPosts.length} Saved Articles'
+                      : '${savedPosts.length} Saved Article',
                   style: GoogleFonts.cabin(
                       fontWeight: FontWeight.bold,
                       fontSize: AppConstants.body1),

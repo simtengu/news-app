@@ -119,6 +119,8 @@ class _FilteredPostsScreenState extends State<FilteredPostsScreen> {
           height: 16,
         ),
         BlocConsumer<PostsBloc, PostsState>(
+          buildWhen: (previous, current) =>
+              current is! PostDetailsScreenPopedOutState,
           listener: (context, state) {
             if (state is PostFilterChangedState) {
               setState(() {
@@ -153,7 +155,9 @@ class _FilteredPostsScreenState extends State<FilteredPostsScreen> {
                         horizontal: 10,
                       ),
                       child: Text(
-                        '${state.posts.length} Available Articles',
+                        state.posts.length > 1
+                            ? '${state.posts.length} Available Articles'
+                            : '${state.posts.length} Available Article',
                         style: GoogleFonts.cabin(
                             fontWeight: FontWeight.bold,
                             fontSize: AppConstants.body1),

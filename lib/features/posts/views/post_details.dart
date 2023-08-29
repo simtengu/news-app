@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:news_app/core/constants.dart';
 
 import '../bloc/posts_bloc.dart';
@@ -21,6 +22,46 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
   void initState() {
     super.initState();
     _postsBloc.add(IsPostSavedCheckEvent(postTitle: widget.post.title));
+  }
+
+  void showMyDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    'https://media.tenor.com/FZxj4M9HGSwAAAAM/jinsoulery-jinsoulburger.gif',
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(top: 10),
+                  child: const Text(
+                    "You cannot share for now",
+                    style: TextStyle(fontSize: AppConstants.body2),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -87,7 +128,9 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                             shape: BoxShape.circle,
                           ),
                           child: IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              showMyDialog(context);
+                            },
                             icon: const Icon(Icons.ios_share),
                           ),
                         ),
@@ -124,6 +167,45 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Text(
+                          widget.post.title,
+                          style: const TextStyle(
+                              fontSize: AppConstants.title1,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black87,
+                              height: 1.2),
+                        ),
+
+                        const SizedBox(
+                          height: 12,
+                        ),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(15),
+                          child: Image.network(
+                            widget.post.imageUrl,
+                            width: MediaQuery.of(context).size.width - 10,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        RichText(
+                            text: TextSpan(
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: AppConstants.primary),
+                          children: [
+                            const TextSpan(
+                              text: 'Category: ',
+                            ),
+                            TextSpan(
+                              text: widget.post.category,
+                              style: const TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: AppConstants.caption1),
+                            ),
+                          ],
+                        )),
+
                         Wrap(
                           children: [
                             const Text(
@@ -139,38 +221,18 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                   color: Colors.grey,
                                   fontSize: AppConstants.caption1),
                             ),
-                            const Text(
-                              "Feb 28 2023 . Word",
-                              style: TextStyle(
+                            Text(
+                              DateFormat.yMMMMd().format(
+                                  DateTime.parse(widget.post.publishedAt)),
+                              style: const TextStyle(
                                   color: Colors.grey,
                                   fontSize: AppConstants.caption1),
                             ),
                           ],
                         ),
-                        const SizedBox(
-                          height: 7,
-                        ),
-                        Text(
-                          widget.post.title,
-                          style: const TextStyle(
-                              fontSize: AppConstants.title1,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.black87,
-                              height: 1.2),
-                        ),
+
                         const SizedBox(
                           height: 12,
-                        ),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(15),
-                          child: Image.network(
-                            widget.post.imageUrl,
-                            width: MediaQuery.of(context).size.width - 10,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 15,
                         ),
                         Text(
                           widget.post.description,

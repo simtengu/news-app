@@ -1,15 +1,11 @@
 import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:hive/hive.dart';
-import 'package:http/http.dart';
 import 'package:meta/meta.dart';
 import 'package:news_app/features/posts/controllers/posts_controller.dart';
 import 'package:news_app/features/posts/controllers/repositories/posts_repository.dart';
-
 import '../../../../core/common/network_info.dart';
 import '../../../posts/models/post_model.dart';
-
 part 'home_event.dart';
 part 'home_state.dart';
 
@@ -34,17 +30,40 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       HomeInitialEvent event, Emitter<HomeState> emit) async {
     List<Post> breakingNewsPosts = [];
     List<Post> recommendedgNewsPosts = [];
+
+    List<String> favCategories = favCategoriesBox.isNotEmpty
+        ? favCategoriesBox.keys.map((key) {
+            String category = favCategoriesBox.get(key)!;
+            return category;
+          }).toList()
+        : [];
+
     emit(HomeLoadingState());
-    DataState response = await _postsController.fetchAllPosts();
+    DataState response =
+        await _postsController.fetchHomepagePosts(favCategories);
 
     if (response is DataSuccess) {
-      breakingNewsPosts = response.data as List<Post>;
-      recommendedgNewsPosts = List.from(breakingNewsPosts);
-      // recommendedgNewsPosts = response.data as List<Post>;
-      recommendedgNewsPosts.shuffle();
-      emit(HomeInitialState(
-          breakingNewsPosts: breakingNewsPosts,
-          recommendedgNewsPosts: recommendedgNewsPosts));
+      if (favCategories.isNotEmpty) {
+        final Map<String, dynamic> rsData =
+            response.data as Map<String, dynamic>;
+
+        breakingNewsPosts = rsData["allPosts"] as List<Post>;
+        recommendedgNewsPosts = rsData["recommendedPosts"] as List<Post>;
+
+        emit(HomeInitialState(
+            breakingNewsPosts: breakingNewsPosts,
+            recommendedgNewsPosts: recommendedgNewsPosts.isNotEmpty
+                ? recommendedgNewsPosts
+                : breakingNewsPosts));
+      } else {
+        breakingNewsPosts = response.data as List<Post>;
+        recommendedgNewsPosts = List.from(breakingNewsPosts);
+
+        recommendedgNewsPosts.shuffle();
+        emit(HomeInitialState(
+            breakingNewsPosts: breakingNewsPosts,
+            recommendedgNewsPosts: recommendedgNewsPosts));
+      }
     }
 
     if (response is DataError) {
@@ -95,7 +114,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   FutureOr<void> toggleFavCategoryEvent(
       ToggleFavCategoryEvent event, Emitter<HomeState> emit) {
     if (event.isFav) {
-      //removing category from favorite categories...............
+      //removing category from favorite categories........................................
       List<Map<String, String>> categories = _loadFavCategories();
 
       final category =
@@ -111,7 +130,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emit(LoadedFavCategoriesState(favCategories: favCategories));
   }
 
-//loading stored fav categories...................................
+//loading stored fav categories...........................................................
   List<Map<String, String>> _loadFavCategories() {
     List<Map<String, String>> categories = [];
 

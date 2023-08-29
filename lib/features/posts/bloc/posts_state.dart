@@ -13,6 +13,10 @@ final class NavigateToPostDetailsState extends PostsActionState {
   NavigateToPostDetailsState({required this.post});
 }
 
+final class PostDetailsScreenPopedOutState extends PostsState {
+
+}
+
 final class PostsErrosState extends PostsState {
   final String errorMessage;
   PostsErrosState({required this.errorMessage});
@@ -72,3 +76,4 @@ final class IsPostSavedCheckState extends PostsState {
   final bool isPostSaved;
   IsPostSavedCheckState( {required this.isPostSaved});
 }
+

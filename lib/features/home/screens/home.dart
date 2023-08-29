@@ -63,11 +63,18 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: GoogleFonts.cabin(
                             fontWeight: FontWeight.bold, fontSize: 22),
                       ),
-                      Text(
-                        'Show More',
-                        style: GoogleFonts.cabin(
-                            color: AppConstants.bgPrimary,
-                            fontWeight: FontWeight.w500),
+                      InkWell(
+                        onTap: () => BlocProvider.of<HomeBloc>(context).add(
+                            NavigateTabEvent(pageIndex: 1, filterInfo: const {
+                          "searchCategory": "all",
+                          "filterCountry": "worldwide"
+                        })),
+                        child: Text(
+                          'Show More',
+                          style: GoogleFonts.cabin(
+                              color: AppConstants.bgPrimary,
+                              fontWeight: FontWeight.w500),
+                        ),
                       ),
                     ],
                   ),
@@ -190,11 +197,18 @@ class _HomeScreenState extends State<HomeScreen> {
                             fontWeight: FontWeight.bold,
                             fontSize: AppConstants.body1),
                       ),
-                      Text(
-                        'Show More',
-                        style: GoogleFonts.cabin(
-                            color: AppConstants.bgPrimary,
-                            fontWeight: FontWeight.w500),
+                      InkWell(
+                        onTap: () => BlocProvider.of<HomeBloc>(context).add(
+                            NavigateTabEvent(pageIndex: 1, filterInfo: const {
+                          "searchCategory": "all",
+                          "filterCountry": "worldwide"
+                        })),
+                        child: Text(
+                          'Show More',
+                          style: GoogleFonts.cabin(
+                              color: AppConstants.bgPrimary,
+                              fontWeight: FontWeight.w500),
+                        ),
                       ),
                     ],
                   ),
@@ -239,5 +253,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
-

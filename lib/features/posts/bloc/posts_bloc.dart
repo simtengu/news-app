@@ -28,6 +28,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
     on<PostSaveToggleEvent>(postSaveToggleEvent);
     on<LoadSavedPostsEvent>(loadSavedPostsEvent);
     on<IsPostSavedCheckEvent>(isPostSavedCheckEvent);
+    on<PostDetailsScreenPopedOutEvent>(postDetailsScreenPopedOutEvent);
   }
 
   FutureOr<void> navigateToPostDetailsEvent(
@@ -164,4 +165,8 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
   }
 
 
+
+  FutureOr<void> postDetailsScreenPopedOutEvent(PostDetailsScreenPopedOutEvent event, Emitter<PostsState> emit) {
+    emit(PostDetailsScreenPopedOutState());
+  }
 }

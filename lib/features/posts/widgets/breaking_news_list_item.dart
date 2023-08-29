@@ -43,12 +43,11 @@ class BreakingNewsListItem extends StatelessWidget {
                     left: 0,
                     right: 0,
                     child: Container(
-                      padding: const EdgeInsets.all(12.0).copyWith(top: 15),
+                      padding: const EdgeInsets.all(12.0).copyWith(top: 37),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         gradient: LinearGradient(
                             colors: [
-                              Colors.transparent,
                               Colors.transparent,
                               Colors.black.withOpacity(0.1),
                               Colors.black.withOpacity(0.2),

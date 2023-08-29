@@ -20,6 +20,30 @@ class HomeTabsScreen extends StatefulWidget {
 class _HomeTabsScreenState extends State<HomeTabsScreen> {
   int active_screen_index = 0;
 
+  void showMyDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Notifications Dialog'),
+          content: const Text(
+            "You don't have any notification",
+            style: TextStyle(fontSize: AppConstants.body2),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+              
+                Navigator.of(context).pop(); 
+              },
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   final List<Widget> _tabs_container = const [
     HomeScreen(),
     FilteredPostsScreen(),
@@ -97,7 +121,9 @@ class _HomeTabsScreenState extends State<HomeTabsScreen> {
                       shape: BoxShape.circle,
                     ),
                     child: IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        showMyDialog(context);
+                      },
                       icon: const Icon(Icons.notifications_none),
                     ),
                   ),
@@ -264,7 +290,6 @@ class _HomeTabsScreenState extends State<HomeTabsScreen> {
                   });
                 }
                 if (state.pageIndex == 1) {
-                  
                   //for updating active filters................................................
                   BlocProvider.of<PostsBloc>(context).add(
                       PostFilterChangedEvent(

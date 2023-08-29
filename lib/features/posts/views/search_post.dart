@@ -4,7 +4,6 @@ import 'package:news_app/core/common/error_screen.dart';
 import 'package:news_app/core/constants.dart';
 import 'package:news_app/features/posts/bloc/posts_bloc.dart';
 import 'package:news_app/features/posts/views/post_details.dart';
-import 'package:news_app/features/posts/widgets/post_loading_card.dart';
 
 import '../models/post_model.dart';
 
@@ -57,7 +56,7 @@ class _SearchPostScreenState extends State<SearchPostScreen> {
                   autofocus: true,
                   onChanged: (value) {
                     if (value.isNotEmpty) {
-                      postsBloc.add(SearchPostsEvent(searchTerm: value));
+                      postsBloc.add(SearchPostsEvent(searchTerm: value.trim()));
                     } else {
                       postsBloc.add(SearchPostsInitialEvent());
                     }
@@ -120,8 +119,7 @@ class _SearchPostScreenState extends State<SearchPostScreen> {
                     },
                   ),
                 ),
-              if (state is SearchPostsResultState &&
-                  state.matchedPosts.isEmpty)
+              if (state is SearchPostsResultState && state.matchedPosts.isEmpty)
                 Container(
                   margin: const EdgeInsets.only(top: 15),
                   child: const Center(
@@ -141,8 +139,11 @@ class _SearchPostScreenState extends State<SearchPostScreen> {
                   ),
                 ),
               if (state is PostsLoadingState)
-                const Center(
-                  child: CircularProgressIndicator(),
+                Container(
+                  margin: const EdgeInsets.only(top: 30),
+                  child: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
                 ),
               if (state is PostsErrosState)
                 ErrorScreen(message: state.errorMessage),

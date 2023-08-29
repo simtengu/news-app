@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:news_app/features/posts/controllers/repositories/posts_repository.dart';
 import 'dart:convert';
 import '../../../core/common/network_info.dart';
@@ -8,23 +10,68 @@ class PostsController {
   PostsController({required PostsRepo postsRepo}) : _postsRepo = postsRepo;
 
 //fetch all posts(no filters involved).......................................................
-  Future<DataState> fetchAllPosts() async {
-    Map<String, String> queryParameters = {
-      'category': 'sports',
-      'country': 'gb',
-    };
-    try {
-      var response = await _postsRepo.fetchAllPosts(queryParameters);
+  Future<DataState> fetchHomepagePosts(List<String> favCategories) async {
+    Map<String, String> allPostsQueryParameters = {};
 
-      if (response.statusCode == 200) {
-        List<Post> posts = responseDataCleaning(response.body);
+    if (favCategories.isNotEmpty) {
+      //a user has fav categories.................................... recommend posts...........
+      String favCategoriesString = "";
 
-        return DataSuccess(data: posts);
-      } else {
+      for (var i = 0; i < favCategories.length; i++) {
+        final cat = favCategories[i];
+        if ((favCategories.length - 1) == i) {
+          favCategoriesString += cat;
+        } else {
+          favCategoriesString += "$cat,";
+        }
+      }
+
+      Map<String, String> favCategoriesPostsQueryParameters = {
+        "category": favCategoriesString
+      };
+
+      try {
+        final responses = await Future.wait([
+          _postsRepo.fetchAllPosts(allPostsQueryParameters),
+          _postsRepo.fetchRecommendedPosts(favCategoriesPostsQueryParameters)
+        ]);
+        final allPostsFetchRs = responses[0];
+        final recommendedPostsRs = responses[1];
+
+        if (allPostsFetchRs.statusCode == 200 &&
+            recommendedPostsRs.statusCode == 200) {
+          List<Post> allPosts = responseDataCleaning(allPostsFetchRs.body);
+          List<Post> recommendedPosts =
+              responseDataCleaning(recommendedPostsRs.body);
+
+          final Map<String, dynamic> rsData = {
+            "allPosts": allPosts,
+            "recommendedPosts": recommendedPosts,
+          };
+
+          return DataSuccess(data: rsData);
+        } else {
+          return DataError(error: 'Something went wrong..');
+        }
+      } catch (e) {
+        return DataError(error: e.toString());
+      }
+    } else {
+      //a user doesnt have fav categories.................................... just fetch all posts...........
+
+      try {
+        var response = await _postsRepo.fetchAllPosts(allPostsQueryParameters);
+
+        if (response.statusCode == 200) {
+          List<Post> posts = responseDataCleaning(response.body);
+
+          return DataSuccess(data: posts);
+        } else {
+          return DataError(error: 'Something went wrong..');
+        }
+      } catch (e) {
         return DataError(error: 'Something went wrong..');
       }
-    } catch (e) {
-      return DataError(error: 'Something went wrong..');
     }
   }
 
@@ -101,18 +148,6 @@ class PostsController {
           allPosts.add(post);
         }
       }
-
-      // if (img.isNotEmpty) {
-      //   checking if the image link is valid ( from api specific errors )..............................................
-      //   if (img.substring(10).contains('https') || img.startsWith('//')) {
-      //     postMap['image_url'] = "";
-      //   }
-      //   Post post = Post.fromMap(postMap);
-      //   allPosts.add(post);
-      // } else {
-      //   Post post = Post.fromMap(postMap);
-      //   allPosts.add(post);
-      // }
     }
 
     //removing duplicate posts.........................................................

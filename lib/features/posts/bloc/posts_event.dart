@@ -56,3 +56,4 @@ final class IsPostSavedCheckEvent extends PostsEvent {
 
 
 
+final class PostDetailsScreenPopedOutEvent extends PostsEvent {}

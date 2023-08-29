@@ -94,7 +94,7 @@ class Post {
           as String,
       category: categoryFinal.isNotEmpty ? categoryFinal[0] : 'sports',
       country: countryFinal.isNotEmpty ? countryFinal[0] : "United kingdoms",
-      publishedAt: (map['pubDate'] ?? 'Feb 28, 2023') as String,
+      publishedAt: (map['pubDate'] ?? '2023-08-28 12:56:24') as String,
     );
   }
 
