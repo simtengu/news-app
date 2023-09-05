@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:news_app/features/posts/views/post_details.dart';
 import 'package:intl/intl.dart';
+import 'package:news_app/core/constants.dart';
 
 import '../bloc/posts_bloc.dart';
 import '../models/post_model.dart';
@@ -49,14 +50,15 @@ class PostCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: Image.network(
-                        post.imageUrl,
-                        width: MediaQuery.of(context).size.width * 0.30,
-                        height: 100,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                        borderRadius: BorderRadius.circular(15),
+                        child: FadeInImage(
+                          placeholder: const AssetImage(
+                              '${AppConstants.imgPath}loaderImg.gif'),
+                          image: NetworkImage(post.imageUrl),
+                          width: MediaQuery.of(context).size.width * 0.30,
+                          height: 100,
+                          fit: BoxFit.cover,
+                        )),
                     const SizedBox(
                       width: 7,
                     ),

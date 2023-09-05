@@ -33,8 +33,7 @@ class _HomeTabsScreenState extends State<HomeTabsScreen> {
           actions: [
             TextButton(
               onPressed: () {
-              
-                Navigator.of(context).pop(); 
+                Navigator.of(context).pop();
               },
               child: const Text('Close'),
             ),

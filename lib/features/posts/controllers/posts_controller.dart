@@ -70,7 +70,7 @@ class PostsController {
           return DataError(error: 'Something went wrong..');
         }
       } catch (e) {
-        return DataError(error: 'Something went wrong..');
+        return DataError(error: e.toString());
       }
     }
   }
@@ -103,7 +103,7 @@ class PostsController {
         return DataError(error: 'Something went wrong..');
       }
     } catch (e) {
-      return DataError(error: 'Something went wrong..');
+      return DataError(error: e.toString());
     }
   }
 //End of fetch filtered posts.............................................................................
@@ -123,7 +123,7 @@ class PostsController {
         return DataError(error: 'Something went wrong..');
       }
     } catch (e) {
-      return DataError(error: 'Something went wrong..');
+      return DataError(error: e.toString());
     }
   }
   //end of search post.........................................................................

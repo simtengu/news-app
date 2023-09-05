@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:news_app/core/constants.dart';
@@ -175,7 +176,6 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                               color: Colors.black87,
                               height: 1.2),
                         ),
-
                         const SizedBox(
                           height: 12,
                         ),
@@ -186,7 +186,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                             width: MediaQuery.of(context).size.width - 10,
                             fit: BoxFit.cover,
                           ),
-                        ),
+                        ).animate().fadeIn(duration: 1.6.seconds),
                         const SizedBox(height: 8),
                         RichText(
                             text: TextSpan(
@@ -204,8 +204,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                   fontSize: AppConstants.caption1),
                             ),
                           ],
-                        )),
-
+                        )).animate().fadeIn(duration: 1.seconds),
                         Wrap(
                           children: [
                             const Text(
@@ -229,8 +228,7 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                                   fontSize: AppConstants.caption1),
                             ),
                           ],
-                        ),
-
+                        ).animate().fadeIn(duration: 1.seconds),
                         const SizedBox(
                           height: 12,
                         ),
@@ -241,16 +239,11 @@ class _PostDetailsScreenState extends State<PostDetailsScreen> {
                           style: const TextStyle(
                               fontSize: AppConstants.body1,
                               color: Colors.black54),
-                        ),
-
-                        // Shimmer.fromColors(
-                        //   baseColor: Colors.grey.shade400,
-                        //   highlightColor: Colors.white,
-                        //   child: Container(
-                        //     height: 33,
-                        //     color: Colors.black26,
-                        //   ),
-                        // ),
+                        )
+                            .animate()
+                            .fadeIn(
+                                curve: Curves.easeInCubic, duration: 1.seconds)
+                            .slideY(begin: .02, duration: 1.seconds),
                       ],
                     ),
                   ),

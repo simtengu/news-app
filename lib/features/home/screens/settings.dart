@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news_app/core/constants.dart';
 import 'package:news_app/features/home/bloc/bloc/home_bloc.dart';
@@ -44,7 +45,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             "Favorite Categories",
             style: TextStyle(
                 fontWeight: FontWeight.bold, fontSize: AppConstants.heading2),
-          ),
+          )
+              .animate()
+              .fadeIn(duration: 1.seconds)
+              .slideY(duration: 1.3.seconds, curve: Curves.bounceOut),
           const SizedBox(
             height: 4,
           ),
@@ -54,7 +58,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 fontWeight: FontWeight.bold,
                 fontSize: AppConstants.body2,
                 color: AppConstants.bgSecondary),
-          ),
+          )
+              .animate()
+              .fadeIn(duration: 1.seconds)
+              .slideY(duration: 1.3.seconds, curve: Curves.bounceOut),
           const SizedBox(
             height: 27,
           ),
@@ -78,7 +85,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             isSelected: isCategorySelected(category),
                             title: category,
                             canBeAdded: categories.length <= 2,
-                          ),
+                          )
+                              .animate()
+                              .scale(
+                                  begin: const Offset(0, 0),
+                                  duration: .7.seconds)
+                              .shimmer(
+                                  delay: 300.ms,
+                                  duration: 1.2.seconds,
+                                  curve: Curves.easeIn),
                         )
                         .toList(),
                   ],
