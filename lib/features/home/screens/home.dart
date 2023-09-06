@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<HomeBloc, HomeState>(
-      // bloc: BlocProvider.of<HomeBloc>(context),
+      // bloc: BlocProvider.of<HomeBloc>(context),,
       listenWhen: (previous, current) => current is HomeActionState,
       buildWhen: (previous, current) => current is! HomeActionState,
       listener: (context, state) {},
